@@ -39,6 +39,34 @@ router.post("/event", (req, res) => {
     })
 })
 
+// Edit an event
+router.patch("/edit-event/:eventId", async (req, res) => {
+    const { eventId } = req.params;
+    const { startDate, endDate } = req.body;
+
+    const event = await Events.findOne({ _id: eventId });
+    if(!event)
+    {
+        return res.status(404).json({message: "Event does not exist!"});
+    }
+    else {
+        const appendedEvent = await Events.updateOne({ _id: eventId }, {
+            $set: {
+                startDate: startDate,
+                endDate: endDate,
+            }
+        });
+        // Check if the event was successfully updated
+        if(appendedEvent.acknowledged)
+        {
+            return res.status(200).json({message: "Event successfully updated"});
+        }
+        else {
+            return res.status(400).json({message: "Event was not updated"});
+        }
+    }
+})
+
 // Return an event using eventId
 router.get("/event/:eventId", async (req, res) => {
     const { eventId } = req.params;
@@ -70,12 +98,25 @@ router.get("/allevents", async (req, res) => {
     .catch(err => {
         return res.status(404).json({error: err});
     })
-    res.json({
-        eventName: allEvents.eventName,
-        eventId: allEvents.eventId,
-        startDate: allEvents.startDate,
-        endDate: allEvents.endDate
-    });
+    res.json(allEvents);
+})
+
+// Delete an event
+router.delete("/delete-event/:eventId", async (req, res) => {
+    const { eventId } = req.params;
+
+    const event = await Events.findOne({ _id: eventId });
+    console.log(event.eventName);
+    if(!event)
+    {
+        return res.status(404).json({message: "Event does not exist!"});
+    }
+    else {
+        const deleteEvent = await Events.deleteOne({ _id: eventId });
+        res.json({
+            message: deleteEvent
+        })
+    }
 })
 
 // Create an artist
@@ -99,6 +140,33 @@ router.post("/artist", async (req, res) => {
     })
 })
 
+// Edit an artist
+router.patch("/edit-artist/:artistId", async (req, res) => {
+    const { artistId } = req.params;
+    const { artistName } = req.body;
+
+    const artist = await Artists.findOne({ _id: artistId });
+    if(!artist)
+    {
+        return res.status(404).json({message: "Artist does not exist!"});
+    }
+    else {
+        const appendedArtist = await Artists.updateOne({ _id: artistId }, {
+            $set: {
+                artistName: artistName
+            }
+        });
+        // Check if the artist was successfully updated
+        if(appendedArtist.acknowledged)
+        {
+            return res.status(200).json({message: "Artist successfully updated"});
+        }
+        else {
+            return res.status(400).json({message: "Artist was not updated"});
+        }
+    }
+})
+
 // Return all artists
 router.get("/allartists", async (req, res) => {
 
@@ -107,6 +175,24 @@ router.get("/allartists", async (req, res) => {
         return res.status(404).json({error: err});
     })
     res.json(allArtists);
+})
+
+// Delete an artist
+router.delete("/delete-artist/:artistId", async (req, res) => {
+    console.log("hit endpoint");
+    const { artistId } = req.params;
+    const artist = await Artists.findOne({ _id: artistId });
+    console.log(artist);
+    if(!artist)
+    {
+        return res.status(404).json({message: "Artist does not exist!"});
+    }
+    else {
+        const deleteArtist = await Artists.deleteOne({ _id: artistId });
+        res.json({
+            message: deleteArtist
+        })
+    }
 })
 
 // Create a stage
@@ -129,6 +215,33 @@ router.post("/stage", async (req, res) => {
     })
 })
 
+// Edit an stage
+router.patch("/edit-stage/:stageId", async (req, res) => {
+    const { stageId } = req.params;
+    const { stageName } = req.body;
+
+    const stage = await Stages.findOne({ _id: stageId });
+    if(!stage)
+    {
+        return res.status(404).json({message: "Stage does not exist!"});
+    }
+    else {
+        const appendedStage = await Stages.updateOne({ _id: stageId }, {
+            $set: {
+                stageName: stageName
+            }
+        });
+        // Check if the stage was successfully updated
+        if(appendedStage.acknowledged)
+        {
+            return res.status(200).json({message: "Stage successfully updated"});
+        }
+        else {
+            return res.status(400).json({message: "Stage was not updated"});
+        }
+    }
+})
+
 // Return all stages by event
 router.get("/allstages/:eventId", async (req, res) => {
     const { eventId } = req.params;
@@ -144,6 +257,24 @@ router.get("/allstages/:eventId", async (req, res) => {
             eventName: event.eventName,
             stages: event.stages
         });
+    }
+})
+
+// Delete a stage
+router.delete("/delete-stage/:stageId", async (req, res) => {
+    const { stageId } = req.params;
+
+    const stage = await Stages.findOne({ _id: stageId });
+    console.log(stage.stageName);
+    if(!stage)
+    {
+        return res.status(404).json({message: "Stage does not exist!"});
+    }
+    else {
+        const stageEvent = await Stages.deleteOne({ _id: stageId });
+        res.json({
+            message: stageEvent
+        })
     }
 })
 
@@ -171,6 +302,34 @@ router.post("/performance", async (req, res) => {
     })
 })
 
+// Edit an performance
+router.patch("/edit-performance/:performanceId", async (req, res) => {
+    const { performanceId } = req.params;
+    const { startTime, endTime } = req.body;
+
+    const performance = await Performances.findOne({ _id: performanceId });
+    if(!performance)
+    {
+        return res.status(404).json({message: "Performance does not exist!"});
+    }
+    else {
+        const appendedPerformance = await Performances.updateOne({ _id: performanceId }, {
+            $set: {
+                startTime: startTime,
+                endTime: endTime,
+            }
+        });
+        // Check if the performance was successfully updated
+        if(appendedPerformance.acknowledged)
+        {
+            return res.status(200).json({message: "Performance successfully updated"});
+        }
+        else {
+            return res.status(400).json({message: "Performance was not updated"});
+        }
+    }
+})
+
 // Return all performances by event
 router.get("/allperformances/:eventId", async (req, res) => {
     const { eventId } = req.params;
@@ -186,6 +345,22 @@ router.get("/allperformances/:eventId", async (req, res) => {
             eventName: event.eventName,
             performances: event.performances
         });
+    }
+})
+
+// Delete a performance
+router.delete("/delete-performance/:performanceId", async (req, res) => {
+    const { performanceId } = req.params;
+    const performance = await Performances.findOne({ _id: performanceId });
+    if(!performance)
+    {
+        return res.status(404).json({message: "Performance does not exist!"});
+    }
+    else {
+        const performanceEvent = await Performances.deleteOne({ _id: performanceId });
+        res.json({
+            message: performanceEvent
+        })
     }
 })
 
@@ -209,6 +384,33 @@ router.post("/sponsor", async (req, res) => {
     })
 })
 
+// Edit an sponsor
+router.patch("/edit-sponsor/:sponsorId", async (req, res) => {
+    const { sponsorId } = req.params;
+    const { category } = req.body;
+
+    const sponsor = await Sponsors.findOne({ _id: sponsorId });
+    if(!sponsor)
+    {
+        return res.status(404).json({message: "Sponsor does not exist!"});
+    }
+    else {
+        const appendedSponsor = await Sponsors.updateOne({ _id: sponsorId }, {
+            $set: {
+                category: category
+            }
+        });
+        // Check if the sponsor was successfully updated
+        if(appendedSponsor.acknowledged)
+        {
+            return res.status(200).json({message: "Sponsor successfully updated"});
+        }
+        else {
+            return res.status(400).json({message: "Sponsor was not updated"});
+        }
+    }
+})
+
 // Return all sponsors
 router.get("/allsponsors", async (req, res) => {
 
@@ -217,6 +419,23 @@ router.get("/allsponsors", async (req, res) => {
         return res.status(404).json({error: err});
     })
     res.json(allSponsors);
+})
+
+// Delete a sponsor
+router.delete("/delete-sponsor/:sponsorId", async (req, res) => {
+    const { sponsorId } = req.params;
+
+    const sponsor = await Sponsors.findOne({ _id: sponsorId });
+    if(!sponsor)
+    {
+        return res.status(404).json({message: "Sponsor does not exist!"});
+    }
+    else {
+        const sponsorEvent = await Sponsors.deleteOne({ _id: sponsorId });
+        res.json({
+            message: sponsorEvent
+        })
+    }
 })
 
 // Assign artist to performance
@@ -254,6 +473,42 @@ router.put("/performance/artist/:performanceId/:artistId", async (req, res) => {
     }
 })
 
+// Remove artist from performance
+router.put("/remove-artist/:performanceId/:artistId", async (req, res) => {
+    const { performanceId, artistId } = req.params;
+
+    // Locate the performance using performanceId
+    const performance = await Performances.findOne({ _id: performanceId });
+    console.log(performance);
+    if(!performance)
+    {
+        return res.status(404).json({message: "Performance does not exist!"});
+    }
+    else {
+        // Locate the artist using artistId
+        const artist = await Artists.findOne({ _id: artistId });
+        console.log(artist);
+        if(!artist)
+        {
+            return res.status(404).json({message: "Artist does not exist!"});
+        }
+        // Remove the artist from the specified performance
+        const appendedPerformance = await Performances.updateOne({ _id: performanceId }, {
+            $pull: {
+                artist: artistId
+            }
+        });
+        // Check if the artist was successfully removed
+        if(appendedPerformance.acknowledged)
+        {
+            return res.status(200).json({message: "Artist successfully removed from performance"});
+        }
+        else {
+            return res.status(400).json({message: "Artist not removed"});
+        }
+    }
+})
+
 // Assign stage to performance
 router.put("/performance/stage/:performanceId/:stageId", async (req, res) => {
     const { performanceId, stageId } = req.params;
@@ -285,6 +540,41 @@ router.put("/performance/stage/:performanceId/:stageId", async (req, res) => {
         }
         else {
             return res.status(400).json({message: "Stage not added"});
+        }
+    }
+})
+
+// Remove stage from performance
+router.put("/remove-stage/:performanceId/:stageId", async (req, res) => {
+    const { performanceId, stageId } = req.params;
+    // Locate the performance using performanceId
+    const performance = await Performances.findOne({ _id: performanceId });
+    console.log(performance);
+    if(!performance)
+    {
+        return res.status(404).json({message: "Performance does not exist!"});
+    }
+    else {
+        // Locate the stage using stageId
+        const stage = await Stages.findOne({ _id: stageId });
+        console.log(stage);
+        if(!stage)
+        {
+            return res.status(404).json({message: "Stage does not exist!"});
+        }
+        // Remove the stage from the specified performance
+        const appendedPerformance = await Performances.updateOne({ _id: performanceId }, {
+            $pull: {
+                stage: stageId
+            }
+        });
+        // Check if the stage was successfully removed
+        if(appendedPerformance.acknowledged)
+        {
+            return res.status(200).json({message: "Stage successfully removed from performance"});
+        }
+        else {
+            return res.status(400).json({message: "Stage not removed"});
         }
     }
 })
@@ -325,6 +615,42 @@ router.put("/event/performance/:eventId/:performanceId", async (req, res) => {
     }
 })
 
+// Remove performance from event
+router.put("/remove-performance/performance/:eventId/:performanceId", async (req, res) => {
+    const { eventId, performanceId } = req.params;
+    // Locate the event using eventId
+    const event = await Events.findOne({ _id: eventId });
+    console.log(event);
+    if(!event)
+    {
+        return res.status(404).json({message: "Event does not exist!"});
+    }
+    else {
+        // Locate the performance using performanceId
+        const performance = await Performances.findOne({ _id: performanceId });
+        if(!performance)
+        {
+            return res.status(404).json({message: "Performance does not exist!"});
+        }
+        // Remove the performance from the specified event
+        const appendedEvent = await Events.updateOne({ _id: eventId }, {
+            $pull: {
+                performances: {
+                    _id: performanceId
+                }
+            }
+        });
+        // Check if the performance was successfully removed
+        if(appendedEvent.acknowledged)
+        {
+            return res.status(200).json({message: "Performance successfully removed from Event"});
+        }
+        else {
+            return res.status(400).json({message: "Performance not removed"});
+        }
+    }
+})
+
 // Add an artist to an event
 router.put("/event/artist/:eventId/:artistId", async (req, res) => {
     const { eventId, artistId } = req.params;
@@ -357,6 +683,42 @@ router.put("/event/artist/:eventId/:artistId", async (req, res) => {
         }
         else {
             return res.status(400).json({message: "Artist not added"});
+        }
+    }
+})
+
+// Remove artist from event
+router.put("/remove-artist/artist/:eventId/:artistId", async (req, res) => {
+    const { eventId, artistId } = req.params;
+    // Locate the event using eventId
+    const event = await Events.findOne({ _id: eventId });
+    console.log(event);
+    if(!event)
+    {
+        return res.status(404).json({message: "Event does not exist!"});
+    }
+    else {
+        // Locate the artist using artistId
+        const artist = await Artists.findOne({ _id: artistId });
+        if(!artist)
+        {
+            return res.status(404).json({message: "Artist does not exist!"});
+        }
+        // Remove the artist from the specified event
+        const appendedEvent = await Events.updateOne({ _id: eventId }, {
+            $pull: {
+                artists: {
+                    _id: artistId
+                }
+            }
+        });
+        // Check if the artist was successfully removed
+        if(appendedEvent.acknowledged)
+        {
+            return res.status(200).json({message: "Artist successfully removed from Event"});
+        }
+        else {
+            return res.status(400).json({message: "Artist not removed"});
         }
     }
 })
@@ -397,6 +759,42 @@ router.put("/event/stage/:eventId/:stageId", async (req, res) => {
     }
 })
 
+// Remove stage from event
+router.put("/remove-stage/stage/:eventId/:stageId", async (req, res) => {
+    const { eventId, stageId } = req.params;
+    // Locate the event using eventId
+    const event = await Events.findOne({ _id: eventId });
+    console.log(event);
+    if(!event)
+    {
+        return res.status(404).json({message: "Event does not exist!"});
+    }
+    else {
+        // Locate the stage using stageId
+        const stage = await Stages.findOne({ _id: stageId });
+        if(!stage)
+        {
+            return res.status(404).json({message: "Stage does not exist!"});
+        }
+        // Remove the stage from the specified event
+        const appendedEvent = await Events.updateOne({ _id: eventId }, {
+            $pull: {
+                stages: {
+                    _id: stageId
+                }
+            }
+        });
+        // Check if the stage was successfully removed
+        if(appendedEvent.acknowledged)
+        {
+            return res.status(200).json({message: "Stage successfully removed from Event"});
+        }
+        else {
+            return res.status(400).json({message: "Stage not removed"});
+        }
+    }
+})
+
 // Add a sponsor to an event
 router.put("/event/sponsor/:eventId/:sponsorId", async (req, res) => {
     const { eventId, sponsorId } = req.params;
@@ -432,5 +830,42 @@ router.put("/event/sponsor/:eventId/:sponsorId", async (req, res) => {
         }
     }
 })
+
+// Remove sponsor from event
+router.put("/remove-sponsor/sponsor/:eventId/:sponsorId", async (req, res) => {
+    const { eventId, sponsorId } = req.params;
+    // Locate the event using eventId
+    const event = await Events.findOne({ _id: eventId });
+    console.log(event);
+    if(!event)
+    {
+        return res.status(404).json({message: "Event does not exist!"});
+    }
+    else {
+        // Locate the sponsor using sponsorId
+        const sponsor = await Sponsors.findOne({ _id: sponsorId });
+        if(!sponsor)
+        {
+            return res.status(404).json({message: "sponsor does not exist!"});
+        }
+        // Remove the sponsor from the specified event
+        const appendedEvent = await Events.updateOne({ _id: eventId }, {
+            $pull: {
+                sponsors: {
+                    _id: sponsorId
+                }
+            }
+        });
+        // Check if the sponsor was successfully removed
+        if(appendedEvent.acknowledged)
+        {
+            return res.status(200).json({message: "Sponsor successfully removed from Event"});
+        }
+        else {
+            return res.status(400).json({message: "Sponsor not removed"});
+        }
+    }
+})
+
 
 module.exports = router;
