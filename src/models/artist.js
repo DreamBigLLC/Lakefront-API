@@ -7,6 +7,8 @@ const reqString = {
 
 const artistSchema = mongoose.Schema({
     artistName: reqString,
+    src: reqString,
+    href: reqString,
     artistId: mongoose.Schema.Types.ObjectId,
 });
 

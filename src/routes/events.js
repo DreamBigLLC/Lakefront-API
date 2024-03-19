@@ -40,7 +40,7 @@ router.post("/event", (req, res) => {
 })
 
 // Edit an event
-router.patch("/edit-event/:eventId", async (req, res) => {
+router.put("/edit-event/:eventId", async (req, res) => {
     const { eventId } = req.params;
     const { startDate, endDate } = req.body;
 
@@ -121,16 +121,20 @@ router.delete("/delete-event/:eventId", async (req, res) => {
 
 // Create an artist
 router.post("/artist", async (req, res) => {
-    const { artistName, artistId } = req.body;
+    const { artistName, src, href, artistId } = req.body;
 
     const newArtist = new Artists({
         artistName,
+        src,
+        href,
         artistId
     });
     newArtist.save().then(result => {
         res.json(
             {
                 artistName: result.artistName,
+                src: result.src,
+                href: result.href,
                 artistId: result.artistId
             }
         )
@@ -141,9 +145,9 @@ router.post("/artist", async (req, res) => {
 })
 
 // Edit an artist
-router.patch("/edit-artist/:artistId", async (req, res) => {
+router.put("/edit-artist/:artistId", async (req, res) => {
     const { artistId } = req.params;
-    const { artistName } = req.body;
+    const { artistName, src, href } = req.body;
 
     const artist = await Artists.findOne({ _id: artistId });
     if(!artist)
@@ -153,7 +157,9 @@ router.patch("/edit-artist/:artistId", async (req, res) => {
     else {
         const appendedArtist = await Artists.updateOne({ _id: artistId }, {
             $set: {
-                artistName: artistName
+                artistName: artistName,
+                src: src,
+                href: href
             }
         });
         // Check if the artist was successfully updated
@@ -175,6 +181,22 @@ router.get("/allartists", async (req, res) => {
         return res.status(404).json({error: err});
     })
     res.json(allArtists);
+})
+
+// Return all artists by event
+router.get("/allartists/:eventId", async (req, res) => {
+    const { eventId } = req.params;
+    const event = await Events.findOne({ _id: eventId });
+    console.log(event.eventName);
+    if(!event)
+    {
+        return res.status(404).json({message: "Event does not exist!"});
+    }
+    else {
+        return res.json({
+            artists: event.artists
+        });
+    }
 })
 
 // Delete an artist
@@ -216,7 +238,7 @@ router.post("/stage", async (req, res) => {
 })
 
 // Edit an stage
-router.patch("/edit-stage/:stageId", async (req, res) => {
+router.put("/edit-stage/:stageId", async (req, res) => {
     const { stageId } = req.params;
     const { stageName } = req.body;
 
@@ -303,7 +325,7 @@ router.post("/performance", async (req, res) => {
 })
 
 // Edit an performance
-router.patch("/edit-performance/:performanceId", async (req, res) => {
+router.put("/edit-performance/:performanceId", async (req, res) => {
     const { performanceId } = req.params;
     const { startTime, endTime } = req.body;
 
@@ -366,16 +388,20 @@ router.delete("/delete-performance/:performanceId", async (req, res) => {
 
 // Create a sponsor
 router.post("/sponsor", async (req, res) => {
-    const { category, sponsors } = req.body;
+    const { category, name, src, href } = req.body;
     const newSponsor = new Sponsors({
         category,
-        sponsors
+        name,
+        src,
+        href
     });
     newSponsor.save().then(result => {
         res.json(
             {
                 category: result.category,
-                sponsors: result.sponsors
+                name: result.name,
+                src: result.src,
+                href: result.href,
             }
         )
     })
@@ -385,9 +411,9 @@ router.post("/sponsor", async (req, res) => {
 })
 
 // Edit an sponsor
-router.patch("/edit-sponsor/:sponsorId", async (req, res) => {
+router.put("/edit-sponsor/:sponsorId", async (req, res) => {
     const { sponsorId } = req.params;
-    const { category } = req.body;
+    const { category, name, src, href } = req.body;
 
     const sponsor = await Sponsors.findOne({ _id: sponsorId });
     if(!sponsor)
@@ -397,7 +423,10 @@ router.patch("/edit-sponsor/:sponsorId", async (req, res) => {
     else {
         const appendedSponsor = await Sponsors.updateOne({ _id: sponsorId }, {
             $set: {
-                category: category
+                category: category,
+                name: name,
+                src: src,
+                href: href
             }
         });
         // Check if the sponsor was successfully updated

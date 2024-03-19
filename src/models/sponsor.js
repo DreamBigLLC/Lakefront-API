@@ -5,15 +5,11 @@ const reqString = {
     required: true,
 }
 
-const sponsorsSchema = mongoose.Schema({
+const sponsorSchema = mongoose.Schema({
+    category: reqString,
     name: reqString,
     src: reqString,
     href: reqString,
-})
-
-const sponsorSchema = mongoose.Schema({
-    category: reqString,
-    sponsors: [sponsorsSchema]
 });
 
 module.exports = mongoose.model('Sponsors', sponsorSchema);
