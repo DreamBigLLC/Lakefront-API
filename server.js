@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-// const userAuth = require("./src/routes/userAuth");
+const userAuth = require("./src/routes/userAuth");
 const eventDetails = require("./src/routes/events");
 
 app.use(morgan('dev'));
@@ -35,7 +35,7 @@ app.use((req, res, next) => {
     
 app.use(cookieParser());
 
-// app.use("/userAuth", userAuth);
+app.use("/userAuth", userAuth);
 app.use("/events", eventDetails);
 
 app.use((req, res, next) => {
@@ -44,14 +44,14 @@ app.use((req, res, next) => {
     next(error);
 })
 
-// app.use((error, req, res, next) => {
-//     res.status(error.status || 500);
-//     res.json({
-//         error: {
-//             message: error.message
-//         }
-//     });
-// })
+app.use((error, req, res, next) => {
+    res.status(error.status || 500);
+    res.json({
+        error: {
+            message: error.message
+        }
+    });
+})
 
 app.listen(3000, () => console.log("Example app listening on port 3000!"));
 

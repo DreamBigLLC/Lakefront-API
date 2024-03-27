@@ -22,15 +22,11 @@ const performanceSchema = mongoose.Schema({
     endTime: Date,
 });
 
-const sponsorsSchema = mongoose.Schema({
-    name: reqString,
-    src: reqString,
-    href: reqString,
-})
-
 const sponsorSchema = mongoose.Schema({
     category: reqString,
-    sponsors: [sponsorsSchema]
+    name: reqString,
+    src: reqString,
+    href: reqString
 });
 
 const eventSchema = mongoose.Schema({
